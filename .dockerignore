@@ -1,0 +1,9 @@
+.git
+.idea
+.mvn
+target
+.env
+.env.*
+!.env.example
+*.iml
+src/Main.java

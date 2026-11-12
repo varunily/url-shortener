@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 12
+logging:
+  level:
+    com.varun.shortener.web.RequestIdFilter: WARN
+    org.springframework: WARN
+    org.hibernate: WARN
