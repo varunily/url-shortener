@@ -37,3 +37,17 @@ target/
 *.log
 .idea/
 *.iml
+
+### Phase 2 local runtime ###
+orchestrator/.venv/
+orchestrator/.state/
+orchestrator/.cache/
+orchestrator/.tmp/
+orchestrator/worktrees/
+orchestrator/runs/
+**/__pycache__/
+**/.pytest_cache/
+**/*.egg-info/
+
+# Internal assignment material; keep local and do not publish.
+docs/Assignment_Agentic-Proficient_Software_Engineer.pdf

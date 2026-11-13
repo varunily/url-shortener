@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>URL Shortener</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17243a;
+      --muted: #66758c;
+      --line: #dce4ef;
+      --blue: #315fe8;
+      --blue-dark: #244bc0;
+      --surface: #fff;
+      --bg: #f5f7fb;
+      --red: #b42318;
+      --green: #16794a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% -15%, #e3ebff 0, transparent 45%), var(--bg);
+      color: var(--ink);
+    }
+    .shell { width: min(100% - 32px, 760px); margin: 0 auto; padding: 58px 0 72px; }
+    header { margin: 0 0 28px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+    .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; color: #fff; background: var(--blue); border-radius: 12px; box-shadow: 0 5px 14px #315fe833; }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .brand-name { font-size: 15px; font-weight: 750; letter-spacing: -.02em; }
+    .eyebrow { margin: 0 0 9px; color: var(--blue); font-size: 12px; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(32px, 5vw, 46px); line-height: 1.12; letter-spacing: -.045em; }
+    .intro { margin: 13px 0 0; max-width: 590px; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .panel { margin-top: 28px; padding: clamp(20px, 4vw, 32px); background: var(--surface); border: 1px solid #e7ebf2; border-radius: 20px; box-shadow: 0 18px 55px #1c315010, 0 2px 8px #1c315008; }
+    label { display: block; margin-bottom: 9px; font-size: 13px; font-weight: 700; }
+    .url-row { display: flex; gap: 11px; }
+    input {
+      width: 100%; min-width: 0; height: 54px; padding: 0 16px;
+      color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 11px;
+      font: inherit; font-size: 15px; outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    input::placeholder { color: #9aa6b7; }
+    input:focus { border-color: #7893f1; box-shadow: 0 0 0 4px #315fe81a; }
+    button, .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 42px; padding: 0 15px; border: 1px solid transparent; border-radius: 10px;
+      font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer;
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    button:focus-visible, a:focus-visible { outline: 3px solid #7893f188; outline-offset: 2px; }
+    .primary { flex: 0 0 auto; min-width: 128px; min-height: 54px; color: #fff; background: var(--blue); font-size: 14px; }
+    .primary:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); }
+    .primary:disabled { opacity: .68; cursor: wait; }
+    .spinner { display: none; width: 15px; height: 15px; border: 2px solid #ffffff70; border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    .loading .spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    details { margin-top: 19px; border-top: 1px solid #edf0f5; padding-top: 16px; }
+    summary { width: fit-content; color: #52627a; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .optional-fields { display: grid; grid-template-columns: 1fr; gap: 16px; padding-top: 17px; }
+    .optional-fields input { height: 46px; font-size: 14px; }
+    .hint { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .message { display: none; margin: 18px 0 0; padding: 12px 14px; border: 1px solid; border-radius: 10px; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+    .message.visible { display: block; }
+    .error { color: var(--red); background: #fff5f4; border-color: #f2c6c2; }
+    .success { color: var(--green); background: #f0faf5; border-color: #c0e6d1; }
+    .result { display: none; margin-top: 20px; padding: clamp(20px, 4vw, 28px); background: var(--surface); border: 1px solid #dce5f6; border-radius: 18px; box-shadow: 0 12px 38px #1c31500c; }
+    .result.visible { display: block; }
+    .result-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+    .result-heading h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+    .status { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; color: var(--green); background: #eff9f3; border-radius: 999px; font-size: 11px; font-weight: 750; }
+    .status::before { width: 7px; height: 7px; content: ""; background: #2ba36a; border-radius: 50%; }
+    .short-link-box { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; background: #f5f8ff; border: 1px solid #e1e9fb; border-radius: 12px; }
+    .short-link { color: var(--blue); font-size: 17px; font-weight: 750; text-decoration: none; overflow-wrap: anywhere; }
+    .short-link:hover { text-decoration: underline; }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .secondary { color: #34445c; background: #fff; border-color: var(--line); }
+    .secondary:hover { background: #f7f9fc; border-color: #bdc9da; }
+    .open-link { color: #fff; background: var(--blue); }
+    .open-link:hover { background: var(--blue-dark); }
+    .metadata { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 22px; margin: 22px 0 0; }
+    .metadata div { min-width: 0; }
+    .metadata dt { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .metadata dd { margin: 0; color: #33435a; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+    .original-value { word-break: break-word; }
+    .stats { display: none; margin-top: 18px; padding: 17px; background: #f8f9fc; border: 1px solid #e8ecf3; border-radius: 12px; }
+    .stats.visible { display: block; }
+    .stats h3 { margin: 0 0 13px; font-size: 14px; }
+    .stats-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; }
+    .stats-summary dt { color: var(--muted); font-size: 11px; }
+    .stats-summary dd { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
+    .daily-title { margin: 17px 0 8px; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .daily-list { display: grid; gap: 6px; max-height: 170px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+    .daily-list li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #e9edf3; color: #485970; font-size: 12px; }
+    footer { margin-top: 22px; color: #8995a7; font-size: 12px; text-align: center; }
+    @media (max-width: 580px) {
+      .shell { width: min(100% - 24px, 760px); padding-top: 30px; }
+      .url-row { flex-direction: column; }
+      .primary { width: 100%; }
+      .optional-fields { gap: 13px; }
+      .short-link-box { align-items: stretch; flex-direction: column; }
+      .result-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .result-actions button, .result-actions .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <a class="brand" href="/" aria-label="URL Shortener home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M10 13.5 8.5 15a3.18 3.18 0 0 1-4.5-4.5l3-3a3.18 3.18 0 0 1 4.5 0M14 10.5l1.5-1.5a3.18 3.18 0 0 1 4.5 4.5l-3 3a3.18 3.18 0 0 1-4.5 0M9 15l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="brand-name">URL Shortener</span>
+      </a>
+    </header>
+    <p class="eyebrow">Short links, simply</p>
+    <h1>Make your links easier to share.</h1>
+    <p class="intro">Turn a long URL into a clean, compact link. Create one in seconds and keep track of its activity.</p>
+
+    <section class="panel" aria-label="Create a short link">
+      <form id="shorten-form" novalidate>
+        <label for="original-url">Your destination URL</label>
+        <div class="url-row">
+          <input id="original-url" name="originalUrl" type="url" inputmode="url" autocomplete="url" placeholder="Paste your long URL here" required maxlength="2048" aria-describedby="url-hint">
+          <button id="shorten-button" class="primary" type="submit"><span class="spinner" aria-hidden="true"></span><span id="button-label">Shorten URL</span></button>
+        </div>
+        <p class="hint" id="url-hint">Use a complete HTTP or HTTPS link.</p>
+        <details>
+          <summary>Expiration options <span aria-hidden="true">＋</span></summary>
+          <div class="optional-fields">
+            <div>
+              <label for="expiration-days">Expiration in days <span style="font-weight:400;color:#7b8798">(optional)</span></label>
+              <input id="expiration-days" name="expirationDays" type="number" min="1" max="30" step="1" inputmode="numeric" placeholder="No expiration" aria-describedby="expiration-hint">
+              <p class="hint" id="expiration-hint">Choose 1–30 days, or leave empty for no expiration.</p>
+            </div>
+          </div>
+        </details>
+      </form>
+      <div id="form-message" class="message" role="alert" aria-live="polite"></div>
+    </section>
+
+    <section id="result" class="result" aria-label="Short URL result" aria-live="polite">
+      <div class="result-heading"><h2>Your short link is ready</h2><span id="status" class="status">ACTIVE</span></div>
+      <div class="short-link-box">
+        <a id="short-url" class="short-link" target="_blank" rel="noopener noreferrer"></a>
+        <div class="result-actions">
+          <button id="copy-button" class="secondary" type="button">Copy link</button>
+          <a id="open-button" class="button open-link" target="_blank" rel="noopener noreferrer">Open link ↗</a>
+          <button id="stats-button" class="secondary" type="button">View stats</button>
+        </div>
+      </div>
+      <dl class="metadata">
+        <div><dt>Original URL</dt><dd id="original-value" class="original-value"></dd></div>
+        <div><dt>Short code</dt><dd id="code-value"></dd></div>
+        <div><dt>Created</dt><dd id="created-value"></dd></div>
+        <div><dt>Expires</dt><dd id="expires-value"></dd></div>
+      </dl>
+      <div id="stats" class="stats" aria-live="polite">
+        <h3>Link activity</h3>
+        <dl class="stats-summary">
+          <div><dt>Total clicks</dt><dd id="total-clicks">—</dd></div>
+          <div><dt>Last accessed</dt><dd id="last-accessed">Never</dd></div>
+        </dl>
+        <p class="daily-title">Daily clicks (UTC)</p>
+        <ul id="daily-clicks" class="daily-list"></ul>
+      </div>
+      <div id="stats-message" class="message" role="alert" aria-live="polite"></div>
+    </section>
+    <footer>Simple links. Clear insights.</footer>
+  </main>
+  <script>
+    (() => {
+      const form = document.querySelector('#shorten-form');
+      const urlInput = document.querySelector('#original-url');
+      const daysInput = document.querySelector('#expiration-days');
+      const button = document.querySelector('#shorten-button');
+      const buttonLabel = document.querySelector('#button-label');
+      const message = document.querySelector('#form-message');
+      const result = document.querySelector('#result');
+      let currentShortUrl = '';
+      let currentCode = '';
+
+      function clearMessage(element) {
+        element.textContent = '';
+        element.className = 'message';
+      }
+
+      function showMessage(element, text, kind = 'error') {
+        element.textContent = text;
+        element.className = `message visible ${kind}`;
+      }
+
+      function formatDate(value) {
+        if (!value) return 'Never';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? String(value) : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+      }
+
+      async function responseError(response) {
+        let body;
+        try { body = await response.json(); } catch { body = null; }
+        const detail = body?.detail || body?.message || response.statusText || 'Request failed';
+        const code = body?.code ? ` (${body.code})` : '';
+        return `${detail}${code} — HTTP ${response.status}`;
+      }
+
+      function validateUrl(value) {
+        try {
+          const parsed = new URL(value);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch { return false; }
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessage(message);
+        clearMessage(document.querySelector('#stats-message'));
+        if (!validateUrl(urlInput.value.trim())) {
+          showMessage(message, 'Enter a valid HTTP or HTTPS URL.');
+          urlInput.focus();
+          return;
+        }
+        let expirationDays;
+        if (daysInput.value !== '') {
+          expirationDays = Number(daysInput.value);
+          if (!Number.isInteger(expirationDays) || expirationDays < 1 || expirationDays > 30) {
+            showMessage(message, 'Expiration must be a whole number from 1 to 30 days.');
+            daysInput.focus();
+            return;
+          }
+        }
+
+        const payload = { originalUrl: urlInput.value.trim() };
+        if (expirationDays) payload.expiresAt = new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000).toISOString();
+
+        button.disabled = true;
+        button.classList.add('loading');
+        buttonLabel.textContent = 'Shortening…';
+        try {
+          const response = await fetch('/api/v1/urls', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!response.ok) throw new Error(await responseError(response));
+          const data = await response.json();
+          currentCode = data.shortCode;
+          currentShortUrl = `${window.location.origin}/${encodeURIComponent(currentCode)}`;
+          document.querySelector('#short-url').href = currentShortUrl;
+          document.querySelector('#short-url').textContent = currentShortUrl;
+          document.querySelector('#open-button').href = currentShortUrl;
+          document.querySelector('#original-value').textContent = data.originalUrl;
+          document.querySelector('#code-value').textContent = data.shortCode;
+          document.querySelector('#created-value').textContent = formatDate(data.createdAt);
+          document.querySelector('#expires-value').textContent = formatDate(data.expiresAt);
+          document.querySelector('#status').textContent = data.status || 'ACTIVE';
+          result.classList.add('visible');
+          document.querySelector('#stats').classList.remove('visible');
+          result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (error) {
+          showMessage(message, error.message || 'Unable to create a short URL.');
+        } finally {
+          button.disabled = false;
+          button.classList.remove('loading');
+          buttonLabel.textContent = 'Shorten URL';
+        }
+      });
+
+      document.querySelector('#copy-button').addEventListener('click', async (event) => {
+        if (!currentShortUrl) return;
+        const copyButton = event.currentTarget;
+        try {
+          await navigator.clipboard.writeText(currentShortUrl);
+        } catch {
+          const temporary = document.createElement('textarea');
+          temporary.value = currentShortUrl;
+          temporary.style.position = 'fixed';
+          temporary.style.opacity = '0';
+          document.body.append(temporary);
+          temporary.select();
+          document.execCommand('copy');
+          temporary.remove();
+        }
+        copyButton.textContent = 'Copied';
+        window.setTimeout(() => { copyButton.textContent = 'Copy link'; }, 1800);
+      });
+
+      document.querySelector('#stats-button').addEventListener('click', async () => {
+        const statsBox = document.querySelector('#stats');
+        const statsMessage = document.querySelector('#stats-message');
+        clearMessage(statsMessage);
+        try {
+          const response = await fetch(`/api/v1/urls/${encodeURIComponent(currentCode)}/stats`, { headers: { 'Accept': 'application/json' } });
+          if (!response.ok) throw new Error(await responseError(response));
+          const data = await response.json();
+          document.querySelector('#total-clicks').textContent = String(data.totalClicks ?? 0);
+          document.querySelector('#last-accessed').textContent = formatDate(data.lastAccessedAt);
+          const daily = document.querySelector('#daily-clicks');
+          daily.replaceChildren();
+          for (const item of data.dailyClicks || []) {
+            const row = document.createElement('li');
+            const day = document.createElement('span');
+            const count = document.createElement('strong');
+            day.textContent = item.date;
+            count.textContent = String(item.clicks);
+            row.append(day, count);
+            daily.append(row);
+          }
+          if (!daily.children.length) {
+            const empty = document.createElement('li');
+            empty.textContent = 'No clicks recorded yet';
+            daily.append(empty);
+          }
+          statsBox.classList.add('visible');
+        } catch (error) {
+          statsBox.classList.remove('visible');
+          showMessage(statsMessage, error.message || 'Unable to load link stats.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -22,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest({UrlController.class, RedirectController.class})
+@WebMvcTest({UrlController.class, RedirectController.class, HomeController.class})
 @Import({ApiProblemFactory.class, InMemoryRateLimiter.class, ApiContractTest.TimeConfiguration.class})
 class ApiContractTest {
     @Autowired MockMvc mvc;
@@ -33,6 +33,19 @@ class ApiContractTest {
     @TestConfiguration
     static class TimeConfiguration {
         @Bean Clock clock() { return Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC); }
+    }
+
+    @Test
+    void homeAndStaticIndexServeFrontendAndRedirectStillUses302() throws Exception {
+        for (String path : new String[]{"/", "/index.html"}) {
+            mvc.perform(get(path)).andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(content().string(containsString("<title>URL Shortener</title>")));
+        }
+        when(redirects.redirect("abc1234")).thenReturn("https://example.com/path?a=1");
+        mvc.perform(get("/abc1234")).andExpect(status().isFound())
+                .andExpect(header().string("Location", "https://example.com/path?a=1"))
+                .andExpect(header().string("Cache-Control", "no-store"));
     }
 
     @Test
@@ -75,14 +88,6 @@ class ApiContractTest {
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON));
         }
         verifyNoInteractions(urls);
-    }
-
-    @Test
-    void redirectUses302LocationAndNoStore() throws Exception {
-        when(redirects.redirect("abc1234")).thenReturn("https://example.com/path?a=1");
-        mvc.perform(get("/abc1234")).andExpect(status().isFound())
-                .andExpect(header().string("Location", "https://example.com/path?a=1"))
-                .andExpect(header().string("Cache-Control", "no-store"));
     }
 
     @Test

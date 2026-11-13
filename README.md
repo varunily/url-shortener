@@ -1,12 +1,88 @@
-# URL Shortener — Phase 1 backend
+# Interview Assignment: Build an Agentic Software Engineering System — URL Shortener
 
-Java 21, Spring Boot 3.5.4, PostgreSQL 16, Flyway, Spring Data JPA, Validation, Actuator, OpenAPI, and Maven. Package: com.varun.shortener. Application port: 8080.
+This repository contains a Spring Boot URL shortener and a Python/LangGraph engineering orchestrator. The orchestrator works in isolated Git worktrees and produces auditable, human-reviewed engineering outcomes. Assignment requirements and the section order below follow [the supplied assignment PDF](docs/Assignment_Agentic-Proficient_Software_Engineer.pdf).
 
-Five endpoints support creation, HTTP 302 redirects, metadata, click statistics, and idempotent disabling. Codes contain seven case-sensitive Base62 characters.
+## 1. Objective
 
-## Quick start with Docker
+> Build a working prototype that transforms a requirement into a reviewable engineering outcome using an agentic execution model. Demonstrate requirement understanding, task decomposition, multi-step execution, and output generation/validation. Focus on end-to-end SDLC automation with controlled autonomy.
 
-Prerequisite: running Docker Desktop or Docker Engine with Compose.
+The Java service is the application being engineered. The orchestrator demonstrates how a request can become structured requirements, a dependency-aware plan, an approved patch in a Git worktree, real test evidence, review, documentation, and a release-readiness report. It does not automatically merge, commit, push, or deploy the result.
+
+## 2. Scenario
+
+The assignment scenario is to build a URL shortener service from scratch with core APIs, analytics, and reliability features. It frames completion and improvement as a 2–3 day effort using AI assistance (for example, Copilot or Claude) while demonstrating engineering judgment.
+
+The repository has two parts:
+
+- **URL shortener:** Java 21, Spring Boot 3.5.4, Maven, PostgreSQL 16, Spring Data JPA, Flyway, Validation, Actuator, and OpenAPI. The application listens on port 8080 and serves the browser UI at `/`.
+- **Agentic engineering system:** Python 3.11+, LangGraph, Pydantic, SQLite-backed checkpoints/audit records, a CLI-first interface, optional minimal FastAPI, Git worktrees, FakeLLM fixtures, and an Ollama provider for local inference.
+
+The demonstrated engineering scenarios are:
+
+| Scenario | Engineering change or decision | Human-operated run |
+|---|---|---|
+| Greenfield | Add custom URL aliases, collision handling, migration, and regression coverage | `34a6434bf2c9` — READY |
+| Brownfield | Archive expired links on a schedule while preserving mappings, clicks, and `410 URL_EXPIRED` behavior | `7a3c0bb800e2` — READY |
+| Ambiguous requirement | Clarify “Improve URL security and expiration”; the recorded decision sets a 30-day maximum and archives while preserving mappings and click statistics | `2f72a083f296` — READY |
+
+These scenario changes remain in their separate worktrees for review; they have not been merged into the root Java application. A separate Ollama-backed brownfield run, `d80be97dedbe`, reached READY after real Maven/Testcontainers verification. Final readiness was approved after human review of the diff and test evidence.
+
+## 3. Scope
+
+The assignment scope is:
+
+- Greenfield scenarios (new systems/features)
+- Brownfield scenarios (enhancements, refactors, bug fixes)
+- Test and documentation improvements
+- Well-defined and ambiguous requirements
+
+The greenfield, brownfield, and ambiguous demonstrations above cover these scenario types. A separate `retry_rollback` fixture demonstrates bounded test retries and an explicitly approved rollback. The Java backend and the orchestrator are documented independently so a reviewer can inspect application behavior and workflow evidence separately.
+
+## 4. Core Requirements
+
+The assignment defines the following core requirements and this repository addresses them as follows.
+
+1. **Requirement Understanding:** Interpret intent, identify ambiguity, normalize into a clear engineering problem.
+
+   The Requirement Agent produces structured requirements and acceptance criteria. The ambiguous scenario pauses for operator clarification and records the answer and its provenance before planning continues.
+
+2. **Task Decomposition:** Convert high-level requirements into actionable tasks with dependencies and sequencing.
+
+   The Planning Agent produces a validated task DAG with dependencies, affected files, risks, and decisions. The graph schedules dependent coding tasks and joins parallel validation/review/documentation work at synchronization barriers.
+
+3. **Codebase Reasoning (Brownfield):** Identify impacted modules/services/APIs/data flows and demonstrate architectural understanding.
+
+   Planning reads the existing repository and identifies affected Java, migration, test, and documentation files. The brownfield archival workflow preserves the existing redirect and analytics behavior and validates changes against PostgreSQL.
+
+4. **Workflow Orchestration (Critical Differentiator):** Design and implement an agentic orchestration layer that coordinates the full SDLC lifecycle across requirements, architecture/design, implementation, testing, documentation, release readiness, and demonstrates non-linear, stateful execution with governance rather than simple linear task chaining. The orchestration must use an explicit dependency graph with entry/exit gates, support sequential and parallel paths with synchronization, preserve cross-stage context and decision lineage, enforce human approval checkpoints for high-impact actions, and include bounded retries, recovery, rollback, and safe-stop controls. It must also embed policy guardrails for security, compliance, and change control, provide audit-grade observability and traceability, track reliability metrics such as success rate, retry/rollback frequency, MTTR, and end-to-end latency, and dynamically re-plan when upstream outputs change while maintaining governance and controlled agent autonomy.
+
+   LangGraph checkpoints persist workflow state and interrupts in SQLite. Plan, patch/schema/Maven execution, rollback, and final readiness decisions are separate gates. Allowlisted Maven execution, worktree/path restrictions, bounded retries, journaled restoration, and safe-stop handling are enforced by the workflow and tools. Run folders contain approvals, decisions, audit events, diffs, test evidence, reports, and metrics. See [orchestrator architecture](orchestrator/docs/architecture.md) and [governance](orchestrator/docs/governance.md).
+
+5. **Engineering Output Generation:** Produce production-quality code, API/schema definitions, unit/integration tests, and supporting documentation with clean design and maintainability.
+
+   The root Java application includes its API, PostgreSQL schema migrations, tests, and documentation. The Coding Agent proposes complete file changes in an isolated worktree; approved patches are applied only after explicit operator approval. Maven validation uses actual test reports. FakeLLM is deterministic fixture behavior, not model inference; Ollama is a separately configured local provider.
+
+6. **Validation and Risk Control:** Identify risks/trade-offs/failure scenarios and define validation and safety guardrails.
+
+   Validation includes unit/HTTP tests and PostgreSQL Testcontainers integration tests. The orchestrator classifies failures, caps repair retries, records real command results, and requires approval before rollback. Risk and trade-off notes are in [backend design decisions](docs/design-decisions.md) and [orchestrator governance](orchestrator/docs/governance.md).
+
+7. **Controlled Autonomy:** Agents execute multi-step work; humans provide oversight, approvals, and final quality control.
+
+   The CLI pauses at explicit approval and clarification gates. An approval is tied to the inspected proposal/hash and actor. There is no automatic approval or automatic merge/deploy path. See [orchestrator setup and CLI workflow](orchestrator/README.md).
+
+8. **Final Engineering Summary:** Include plan/rationale, artifacts, risks/trade-offs/validation, assumptions, and limitations.
+
+   Each completed run records its plan, decisions, audit trail, code changes, actual test result, metrics, review, and release-readiness report under `orchestrator/runs/<RUN_ID>/`.
+
+## 5. Deliverables
+
+The assignment deliverables and the corresponding project artifacts are listed below.
+
+### Working prototype (runnable end-to-end)
+
+The Java API and one-page UI run with PostgreSQL through Docker Compose. The Python orchestrator is in the same repository under `orchestrator/`.
+
+Prerequisites for the backend are Docker with Compose. From the repository root:
 
 ~~~bash
 docker compose up -d
@@ -15,144 +91,101 @@ curl --fail http://localhost:8080/actuator/health/readiness
 bash scripts/smoke-test.sh
 ~~~
 
-The first command builds the application on a clean checkout. Wait for both containers to be healthy before running the smoke script. After editing application code, rebuild with:
+Open the UI at <http://localhost:8080/>. Swagger UI is at <http://localhost:8080/swagger-ui/index.html>; OpenAPI JSON is at <http://localhost:8080/v3/api-docs>. Compose publishes the application on loopback port 8080 and PostgreSQL on host port 5433.
+
+The Java service reads `DATABASE_URL`, `DB_USER`, `DB_PASSWORD`, and `BASE_URL`. Compose supplies local demonstration defaults; use environment-specific credentials outside local development. See [.env.example](.env.example) and [configuration and behavior](docs/design-decisions.md).
+
+The one-page UI is available at <http://localhost:8080/>. Paste a long URL, optionally set an expiration from 1–30 days, and select **Shorten URL**. The result offers copy and open-link actions plus a stats display. Headless Chromium verified `GET /` returned 200, created short code `BkcOhcj`, copied the link, opened it with a 302 redirect, and showed `totalClicks=1`. The frontend does not include custom aliases.
+
+### Architecture overview (components, orchestration model, control flow, key decisions)
+
+- [Backend components, database schema, transactions, and observability](docs/architecture.md)
+- [Backend reliability, security, scalability, and design decisions](docs/design-decisions.md)
+- [LangGraph state, dependency graph, persistence, and recovery](orchestrator/docs/architecture.md)
+- [Approval, security, and rollback controls](orchestrator/docs/governance.md)
+
+### Three scenarios: greenfield, brownfield, ambiguous (each shows decomposition, orchestration, validation)
+
+Run folders preserve the plans, decisions, approvals, worktree diffs, test results, audits, and metrics for each human-operated scenario. Scenario descriptions and evidence are in [scenario walkthroughs](orchestrator/docs/scenarios.md) and [orchestrator test/evidence results](orchestrator/docs/testing.md).
+
+| Demonstration | Run ID | Result |
+|---|---|---|
+| Greenfield custom aliases | `34a6434bf2c9` | READY; real Maven/PostgreSQL validation |
+| Brownfield expiration archival | `7a3c0bb800e2` | READY; real Maven/PostgreSQL validation |
+| Ambiguous security/expiration request | `2f72a083f296` | READY after recorded clarification and real Maven/PostgreSQL validation |
+| Ollama brownfield archival | `d80be97dedbe` | READY; qwen2.5-coder:7b, real Maven/PostgreSQL validation |
+
+The deterministic `retry_rollback` acceptance scenario deliberately runs a failing Java test, retries within the configured bound, and verifies rollback after a separate approval. It is described in the scenario walkthrough; it is not one of the assignment’s three feature scenarios.
+
+### Setup instructions
+
+To set up the orchestrator, install Python 3.11+, Git, Java 21, Maven 3.9+, and Docker for Testcontainers. From the repository root:
 
 ~~~bash
-docker compose up -d --build
+python3 -m venv orchestrator/.venv
+orchestrator/.venv/bin/python -m pip install -r orchestrator/requirements.lock
+orchestrator/.venv/bin/python -m pip install -e 'orchestrator[test]'
+./orchestrator/run doctor
 ~~~
 
-- Application: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
-- OpenAPI JSON: http://localhost:8080/v3/api-docs
-- PostgreSQL from the host: localhost:5433, database shortener
-- PostgreSQL inside Compose: db:5432
-
-Port 5433 avoids this workstation's existing PostgreSQL server on 5432. DB_PORT changes the host database port.
-
-Compose defaults to development-only credentials: user **shortener**, password **local-development-only**. Published ports bind to loopback. Optional local overrides:
+The CLI is the primary demo. FakeLLM runs deterministic supported fixtures without paid keys or model inference:
 
 ~~~bash
-cp .env.example .env
-# Edit .env before starting Compose.
+./orchestrator/run run greenfield --provider fake
+./orchestrator/run inspect RUN_ID
 ~~~
 
-Changing credentials after the persistent database volume is initialized does not update the existing database user's password. To stop these local services while retaining data:
+Review the pending proposal and use its exact approval ID and hash with the `approve` command documented in [the CLI workflow](orchestrator/README.md), then `resume`. Approval gates recur for the concrete patch/Maven scope and final readiness. The ambiguous scenario accepts operator clarification before planning. Ollama with `qwen2.5-coder:7b` is optional and requires a local Ollama server/model; it is not substituted automatically when selected-provider calls fail. See [provider setup and exact commands](orchestrator/README.md#llm-providers).
 
-~~~bash
-docker compose stop
-~~~
+### Testing approach, limitations, and trade-offs
 
-## Run with a host JVM
-
-Prerequisites: JDK **21**, Maven 3.9+ (or the wrapper), and running Docker.
-
-On macOS, select an installed Java 21 runtime:
-
-~~~bash
-export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
-export PATH="$JAVA_HOME/bin:$PATH"
-java -version
-mvn -version
-~~~
-
-Maven Enforcer requires Java 21. An active Java 25 installation must be switched. The temporary JDK downloaded for validation on this workstation is documented in [test results](docs/testing.md).
-
-~~~bash
-docker compose up -d db
-export DATABASE_URL='jdbc:postgresql://localhost:5433/shortener'
-export DB_USER='shortener'
-export DB_PASSWORD='local-development-only'
-export BASE_URL='http://localhost:8080'
-./mvnw spring-boot:run
-~~~
-
-If the Compose application is using 8080, stop only that project service first with:
-
-~~~bash
-docker compose stop app
-~~~
-
-A host JVM does not automatically load .env; export the variables as above.
-
-## Build and test
+Run the Java backend suite with Java 21, Maven 3.9+, and Docker available for Testcontainers:
 
 ~~~bash
 mvn clean verify
-
-# Equivalent pinned Maven distribution:
-./mvnw clean verify
-
-# Unit and HTTP slice tests only; NOT full acceptance:
-./mvnw test
 ~~~
 
-Surefire runs unit tests; Failsafe runs integration tests during verify. Integration tests start a real disposable PostgreSQL 16 container and apply both migrations. Missing Docker fails the build; tests are never silently skipped.
+The recorded root build passed with **75 tests: 59 unit/HTTP tests and 16 PostgreSQL integration tests; zero failures, errors, or skips**. Integration tests use PostgreSQL 16 through Testcontainers and Flyway migrations. See [backend testing and results](docs/testing.md).
 
-The Dockerfile packages with tests disabled because its build stage has no Docker daemon for Testcontainers. Image construction is not a substitute for full host verification.
+The orchestrator has deterministic unit tests and CLI acceptance scenarios that execute real Maven/Testcontainers in isolated worktrees. Its currently documented evidence includes 58 non-Maven Python tests, four Maven CLI acceptance tests, three READY human-operated scenarios, and a deliberate retry/rollback scenario. The Ollama-backed archival run reports 62 unit/HTTP plus 23 PostgreSQL integration tests. See [orchestrator test results and evidence limits](orchestrator/docs/testing.md); these suites have separate counts and are not additive to the root Java build count.
 
-See [test execution and results](docs/testing.md). Reports appear in target/surefire-reports and target/failsafe-reports.
+Known trade-offs and limits include synchronous durable click-event writes, unbounded event retention, per-process in-memory rate limits, no Phase 1 authentication, local prototype execution, and scenario changes isolated in worktrees pending separate integration. Functional tests do not establish production load capacity, a security audit, backup/restore, or deployment readiness. Review and documentation for the Ollama run were completed by human review of the approved patch and test evidence.
 
-## API
+Useful API routes:
 
-| Method | Path | Success |
+| Method | Path | Behavior |
 |---|---|---|
-| POST | /api/v1/urls | 201, URL metadata |
-| GET | /{code} | 302, original URL in Location |
-| GET | /api/v1/urls/{code} | 200, URL metadata |
-| GET | /api/v1/urls/{code}/stats | 200, lifetime and UTC daily statistics |
-| PATCH | /api/v1/urls/{code}/disable | 200, disabled metadata |
+| POST | `/api/v1/urls` | Create a short URL; returns 201 |
+| GET | `/{code}` | Record a click and return 302 with `Location` |
+| GET | `/api/v1/urls/{code}` | Read URL information |
+| GET | `/api/v1/urls/{code}/stats` | Read total and UTC daily click statistics |
+| PATCH | `/api/v1/urls/{code}/disable` | Disable a URL; later redirects return 410 |
+
+Create a link:
 
 ~~~bash
 curl -i -X POST http://localhost:8080/api/v1/urls \
   -H 'Content-Type: application/json' \
-  -d '{"originalUrl":"https://example.com/articles?id=42"}'
+  -d '{"originalUrl":"https://www.example.com/some/long/page"}'
 ~~~
 
-Illustrative response:
+Use the returned short code for redirect and stats checks. The complete asserted lifecycle is available as `bash scripts/smoke-test.sh`; detailed payloads and error responses are in [API examples](docs/api-examples.md).
 
-~~~json
-{
-  "shortCode": "abc1234",
-  "shortUrl": "http://localhost:8080/abc1234",
-  "originalUrl": "https://example.com/articles?id=42",
-  "createdAt": "2026-11-11T23:00:00Z",
-  "expiresAt": null,
-  "status": "ACTIVE"
-}
-~~~
+## 6. Evaluation Criteria
 
-Use the actual returned code. [API examples](docs/api-examples.md) include the full curl flow and error contracts. The smoke script extracts the generated code and asserts each step.
+The assignment evaluation criteria are:
 
-## Configuration
+- Effectiveness of agentic orchestration
+- Architecture/system design quality
+- Depth of decomposition and execution quality
+- Realism/quality of outputs
+- Validation and risk management rigor
+- Clarity and defensibility of decisions
+- Core engineering principles: modular, testable, reliable, secure, scalable code with safe change management
+- Engineering judgment
 
-| Variable | Default / requirement |
-|---|---|
-| DATABASE_URL | JDBC URL; host JVM defaults to jdbc:postgresql://localhost:5433/shortener; Compose defaults to jdbc:postgresql://db:5432/shortener |
-| DB_USER | shortener |
-| DB_PASSWORD | Required for host JVM; development-only fallback in Compose |
-| BASE_URL | http://localhost:8080; HTTP(S) origin without credentials, path, query, or fragment |
-| DB_PORT | Compose host database port; 5433 |
+For evidence, see the graph and state model in [orchestrator architecture](orchestrator/docs/architecture.md), approval and recovery boundaries in [governance](orchestrator/docs/governance.md), per-scenario artifacts in [scenario walkthroughs](orchestrator/docs/scenarios.md), and executed results/limitations in [orchestrator testing](orchestrator/docs/testing.md).
 
-BASE_URL controls returned links, not the listen port. Plain postgres:// URLs are not JDBC URLs. Production credentials must come from the deployment environment or a secret manager.
+## 7. Expectation
 
-## Behavior
-
-- Absolute HTTP/HTTPS destinations, up to 2,048 characters. Credentials, control characters, malformed hosts, and invalid ports are rejected.
-- Internationalized hostnames must use punycode. Destinations are not fetched or DNS-resolved. Private/local addresses are allowed; reputation is not checked.
-- Optional expiresAt is an ISO-8601 instant with an offset and must be in the future. Creation/expiration use PostgreSQL microsecond precision and UTC output.
-- Unknown/malformed codes: 404. Expired/disabled redirects: 410. Metadata and stats remain available. HEAD on a short URL: 405 without a click.
-- Collisions allow an initial attempt plus **five retries**. Other database failures are not treated as collisions.
-- Creation admits 100 POST attempts per connection IP per rolling hour. Invalid bodies count; rate-limit rejections do not extend the window. Forwarded headers are ignored.
-- Each accepted GET records one durable event before 302. Failed analytics writes prevent redirect. Bots/repeated requests count; events do not prove destination loading.
-- No authentication: anyone knowing a code can inspect or disable it. Codes are identifiers, not authorization.
-- Rate limits are per JVM, reset on restart, and bounded to 10,000 active IP entries. Capacity exhaustion returns 503.
-
-## Architecture and future work
-
-- [Architecture and diagrams](docs/architecture.md)
-- [Decisions, reliability, security, and scalability](docs/design-decisions.md)
-- [Phase 2 orchestration contract and demonstrations](docs/phase-2-orchestration.md)
-
-This is the backend only. The Python/LangGraph engine, persistent workflow state, scheduler, approvals, audit store, and workflow metrics remain Phase 2 work.
-
-The original src/Main.java is preserved outside Maven's source roots. Open pom.xml as a Maven project in IntelliJ and select JDK 21. Generated artifacts, IDE files, and local secrets are ignored by Git.
+Treat this as production-grade engineering work. Demonstrate strong design fundamentals, lifecycle orchestration capability, output ownership, and defensible reasoning. Principle: **Agents execute under defined autonomy boundaries; humans own oversight, approvals, and final quality.**

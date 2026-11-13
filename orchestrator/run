@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+orchestrator_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
+export PYTHONPATH="$orchestrator_dir/src${PYTHONPATH:+:$PYTHONPATH}"
+exec "$orchestrator_dir/.venv/bin/python" -m shortener_orchestrator "$@"

@@ -18,7 +18,7 @@ public class RedirectController {
     @ApiResponse(responseCode = "404", description = "Unknown or malformed short code")
     @ApiResponse(responseCode = "410", description = "Expired or disabled")
     @ApiResponse(responseCode = "503", description = "Database operation failed; no redirect issued")
-    @GetMapping("/{code}")
+    @GetMapping("/{code:[A-Za-z0-9]{7}}")
     public ResponseEntity<Void> redirect(@PathVariable String code) {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(redirects.redirect(code)))
@@ -26,7 +26,7 @@ public class RedirectController {
     }
 
     @Operation(hidden = true)
-    @RequestMapping(value = "/{code}", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/{code:[A-Za-z0-9]{7}}", method = RequestMethod.HEAD)
     public void head() throws HttpRequestMethodNotSupportedException {
         // Spring otherwise invokes GET for HEAD, which would record a false click.
         throw new HttpRequestMethodNotSupportedException("HEAD", java.util.List.of("GET"));

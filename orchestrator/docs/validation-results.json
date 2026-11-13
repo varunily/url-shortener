@@ -1,0 +1,290 @@
+{
+  "recorded_at": "2026-11-12T13:10:42.597986+00:00",
+  "baseline": "cb3e8c3440e3291b8a097dfb9483f37bebb05482",
+  "python": "3.13.3",
+  "java": "21.0.13",
+  "ollama_executed": false,
+  "ollama_limitation": "No ollama binary; localhost:11434 refused connection",
+  "pytest": [
+    {
+      "suite": "pytest-unit",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "58",
+      "time": "18.209",
+      "timestamp": "2026-11-12T00:12:40.957481-05:00",
+      "hostname": "Mac"
+    },
+    {
+      "suite": "pytest-maven",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "4",
+      "time": "85.198",
+      "timestamp": "2026-11-12T00:12:40.957410-05:00",
+      "hostname": "Mac"
+    }
+  ],
+  "cli_acceptance": [
+    {
+      "run_id": "35dc362c25af",
+      "scenario": "greenfield",
+      "status": "READY",
+      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_0/runtime/runs/35dc362c25af",
+      "approval_actor": "pytest-simulated-operator",
+      "provider": "fake",
+      "tests": [
+        {
+          "classification": "passed",
+          "duration_seconds": 16.024381415998505,
+          "errors": 0,
+          "failures": 0,
+          "integration_tests": 21,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_0/runtime/runs/35dc362c25af/tests/1.log",
+          "passed": true,
+          "returncode": 0,
+          "skipped": 0,
+          "unit_tests": 59
+        }
+      ],
+      "metrics": {
+        "agent_outcomes": {
+          "coding": {
+            "failure": 0,
+            "success": 3
+          },
+          "documentation": {
+            "failure": 0,
+            "success": 1
+          },
+          "planning": {
+            "failure": 0,
+            "success": 1
+          },
+          "requirement": {
+            "failure": 0,
+            "success": 1
+          },
+          "review": {
+            "failure": 0,
+            "success": 1
+          },
+          "testing": {
+            "failure": 0,
+            "success": 1
+          }
+        },
+        "approval_wait_seconds": 3.1678500175476074,
+        "definition": "Recovery: first observed failure to passing validation or verified rollback; pending runs are not successes.",
+        "elapsed_seconds": 21.36393713951111,
+        "mean_time_to_recovery_seconds": null,
+        "retry_count": 0,
+        "rollback_count": 0,
+        "status": "READY"
+      }
+    },
+    {
+      "run_id": "038aba2ddf5a",
+      "scenario": "brownfield",
+      "status": "READY",
+      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_1/runtime/runs/038aba2ddf5a",
+      "approval_actor": "pytest-simulated-operator",
+      "provider": "fake",
+      "tests": [
+        {
+          "classification": "passed",
+          "duration_seconds": 12.942174124998928,
+          "errors": 0,
+          "failures": 0,
+          "integration_tests": 19,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_1/runtime/runs/038aba2ddf5a/tests/1.log",
+          "passed": true,
+          "returncode": 0,
+          "skipped": 0,
+          "unit_tests": 59
+        }
+      ],
+      "metrics": {
+        "agent_outcomes": {
+          "coding": {
+            "failure": 0,
+            "success": 3
+          },
+          "documentation": {
+            "failure": 0,
+            "success": 1
+          },
+          "planning": {
+            "failure": 0,
+            "success": 1
+          },
+          "requirement": {
+            "failure": 0,
+            "success": 1
+          },
+          "review": {
+            "failure": 0,
+            "success": 1
+          },
+          "testing": {
+            "failure": 0,
+            "success": 1
+          }
+        },
+        "approval_wait_seconds": 2.6151187419891357,
+        "definition": "Recovery: first observed failure to passing validation or verified rollback; pending runs are not successes.",
+        "elapsed_seconds": 17.474735736846924,
+        "mean_time_to_recovery_seconds": null,
+        "retry_count": 0,
+        "rollback_count": 0,
+        "status": "READY"
+      }
+    },
+    {
+      "run_id": "89b430cedba4",
+      "scenario": "ambiguous",
+      "status": "READY",
+      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_2/runtime/runs/89b430cedba4",
+      "approval_actor": "pytest-simulated-operator",
+      "provider": "fake",
+      "tests": [
+        {
+          "classification": "passed",
+          "duration_seconds": 12.249030499999208,
+          "errors": 0,
+          "failures": 0,
+          "integration_tests": 21,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_2/runtime/runs/89b430cedba4/tests/1.log",
+          "passed": true,
+          "returncode": 0,
+          "skipped": 0,
+          "unit_tests": 59
+        }
+      ],
+      "metrics": {
+        "agent_outcomes": {
+          "coding": {
+            "failure": 0,
+            "success": 3
+          },
+          "documentation": {
+            "failure": 0,
+            "success": 1
+          },
+          "planning": {
+            "failure": 0,
+            "success": 1
+          },
+          "requirement": {
+            "failure": 0,
+            "success": 1
+          },
+          "review": {
+            "failure": 0,
+            "success": 1
+          },
+          "testing": {
+            "failure": 0,
+            "success": 1
+          }
+        },
+        "approval_wait_seconds": 2.592546224594116,
+        "definition": "Recovery: first observed failure to passing validation or verified rollback; pending runs are not successes.",
+        "elapsed_seconds": 17.20832395553589,
+        "mean_time_to_recovery_seconds": null,
+        "retry_count": 0,
+        "rollback_count": 0,
+        "status": "READY"
+      }
+    },
+    {
+      "run_id": "d02c3d90c7a2",
+      "scenario": "retry_rollback",
+      "status": "ROLLED_BACK",
+      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2",
+      "approval_actor": "pytest-simulated-operator",
+      "provider": "fake",
+      "tests": [
+        {
+          "classification": "validation",
+          "duration_seconds": 3.9107637079996493,
+          "errors": 0,
+          "failures": 1,
+          "integration_tests": 0,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/1.log",
+          "passed": false,
+          "returncode": 1,
+          "skipped": 0,
+          "unit_tests": 60
+        },
+        {
+          "classification": "validation",
+          "duration_seconds": 3.780763124999794,
+          "errors": 0,
+          "failures": 1,
+          "integration_tests": 0,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/2.log",
+          "passed": false,
+          "returncode": 1,
+          "skipped": 0,
+          "unit_tests": 60
+        },
+        {
+          "classification": "validation",
+          "duration_seconds": 3.8339460409988533,
+          "errors": 0,
+          "failures": 1,
+          "integration_tests": 0,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/3.log",
+          "passed": false,
+          "returncode": 1,
+          "skipped": 0,
+          "unit_tests": 60
+        },
+        {
+          "classification": "validation",
+          "duration_seconds": 3.794445416000599,
+          "errors": 0,
+          "failures": 1,
+          "integration_tests": 0,
+          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/4.log",
+          "passed": false,
+          "returncode": 1,
+          "skipped": 0,
+          "unit_tests": 60
+        }
+      ],
+      "metrics": {
+        "agent_outcomes": {
+          "coding": {
+            "failure": 0,
+            "success": 6
+          },
+          "planning": {
+            "failure": 0,
+            "success": 4
+          },
+          "requirement": {
+            "failure": 0,
+            "success": 1
+          },
+          "testing": {
+            "failure": 4,
+            "success": 0
+          }
+        },
+        "approval_wait_seconds": 7.087196111679077,
+        "definition": "Recovery: first observed failure to passing validation or verified rollback; pending runs are not successes.",
+        "elapsed_seconds": 27.136591911315918,
+        "mean_time_to_recovery_seconds": 20.41286277770996,
+        "retry_count": 3,
+        "rollback_count": 1,
+        "status": "ROLLED_BACK"
+      }
+    }
+  ]
+}
