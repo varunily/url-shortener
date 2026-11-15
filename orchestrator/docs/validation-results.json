@@ -34,7 +34,7 @@
       "run_id": "35dc362c25af",
       "scenario": "greenfield",
       "status": "READY",
-      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_0/runtime/runs/35dc362c25af",
+      "artifacts": null,
       "approval_actor": "pytest-simulated-operator",
       "provider": "fake",
       "tests": [
@@ -44,7 +44,7 @@
           "errors": 0,
           "failures": 0,
           "integration_tests": 21,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_0/runtime/runs/35dc362c25af/tests/1.log",
+          "log_path": null,
           "passed": true,
           "returncode": 0,
           "skipped": 0,
@@ -91,7 +91,7 @@
       "run_id": "038aba2ddf5a",
       "scenario": "brownfield",
       "status": "READY",
-      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_1/runtime/runs/038aba2ddf5a",
+      "artifacts": null,
       "approval_actor": "pytest-simulated-operator",
       "provider": "fake",
       "tests": [
@@ -101,7 +101,7 @@
           "errors": 0,
           "failures": 0,
           "integration_tests": 19,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_1/runtime/runs/038aba2ddf5a/tests/1.log",
+          "log_path": null,
           "passed": true,
           "returncode": 0,
           "skipped": 0,
@@ -148,7 +148,7 @@
       "run_id": "89b430cedba4",
       "scenario": "ambiguous",
       "status": "READY",
-      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_2/runtime/runs/89b430cedba4",
+      "artifacts": null,
       "approval_actor": "pytest-simulated-operator",
       "provider": "fake",
       "tests": [
@@ -158,7 +158,7 @@
           "errors": 0,
           "failures": 0,
           "integration_tests": 21,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_2/runtime/runs/89b430cedba4/tests/1.log",
+          "log_path": null,
           "passed": true,
           "returncode": 0,
           "skipped": 0,
@@ -205,7 +205,7 @@
       "run_id": "d02c3d90c7a2",
       "scenario": "retry_rollback",
       "status": "ROLLED_BACK",
-      "artifacts": "orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2",
+      "artifacts": null,
       "approval_actor": "pytest-simulated-operator",
       "provider": "fake",
       "tests": [
@@ -215,7 +215,7 @@
           "errors": 0,
           "failures": 1,
           "integration_tests": 0,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/1.log",
+          "log_path": null,
           "passed": false,
           "returncode": 1,
           "skipped": 0,
@@ -227,7 +227,7 @@
           "errors": 0,
           "failures": 1,
           "integration_tests": 0,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/2.log",
+          "log_path": null,
           "passed": false,
           "returncode": 1,
           "skipped": 0,
@@ -239,7 +239,7 @@
           "errors": 0,
           "failures": 1,
           "integration_tests": 0,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/3.log",
+          "log_path": null,
           "passed": false,
           "returncode": 1,
           "skipped": 0,
@@ -251,7 +251,7 @@
           "errors": 0,
           "failures": 1,
           "integration_tests": 0,
-          "log_path": "/Users/varunreddy/Desktop/Api Shortner/orchestrator/.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/tests/4.log",
+          "log_path": null,
           "passed": false,
           "returncode": 1,
           "skipped": 0,
@@ -286,5 +286,7 @@
         "status": "ROLLED_BACK"
       }
     }
-  ]
+  ],
+  "artifact_note": "Raw pytest run folders and Maven logs were created in a local ignored temporary directory. They are not included in this repository; this file retains the measured test and workflow summaries.",
+  "scope_note": "This is the initial 2026-11-12 FakeLLM validation snapshot. The later Ollama brownfield run is summarized in testing.md."
 }

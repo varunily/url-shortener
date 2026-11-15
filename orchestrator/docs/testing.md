@@ -1,6 +1,6 @@
 # Verified results and remaining demonstrations
 
-Validated on 2026-11-12 using macOS, Python 3.13.3, Java 21.0.13, Maven, Docker, and PostgreSQL Testcontainers. Baseline: cb3e8c3440e3291b8a097dfb9483f37bebb05482. [Machine-readable evidence](validation-results.json) records suite totals, run IDs, real Java results, metrics, and artifact locations.
+Validated on 2026-11-12 using macOS, Python 3.13.3, Java 21.0.13, Maven, Docker, and PostgreSQL Testcontainers. Baseline: cb3e8c3440e3291b8a097dfb9483f37bebb05482. The [machine-readable results](validation-results.json) record suite totals, run IDs, real Java results, and metrics. Raw pytest artifacts are temporary local files and are not published in this repository.
 
 ## Executed verification
 
@@ -38,14 +38,14 @@ The implementation session also captured stdout/stderr to orchestrator/.state/py
 
 The following completed CLI runs used deterministic FakeLLM and explicitly labeled **pytest-simulated-operator** decisions. They prove the CLI/state/persistence/test/rollback integration. They are not claimed as real human-approved demonstrations or Ollama inference.
 
-| Scenario | Run | Outcome | Evidence folder |
-|---|---|---|---|
-| Greenfield | 35dc362c25af | READY | [artifacts](../.tmp/pytest-maven/test_real_maven_scenario_from_0/runtime/runs/35dc362c25af/) |
-| Brownfield | 038aba2ddf5a | READY | [artifacts](../.tmp/pytest-maven/test_real_maven_scenario_from_1/runtime/runs/038aba2ddf5a/) |
-| Ambiguous | 89b430cedba4 | READY | [artifacts](../.tmp/pytest-maven/test_real_maven_scenario_from_2/runtime/runs/89b430cedba4/) |
-| Retry/rollback | d02c3d90c7a2 | ROLLED_BACK | [artifacts](../.tmp/pytest-maven/test_real_maven_scenario_from_3/runtime/runs/d02c3d90c7a2/) |
+| Scenario | Run | Outcome |
+|---|---|---|
+| Greenfield | 35dc362c25af | READY |
+| Brownfield | 038aba2ddf5a | READY |
+| Ambiguous | 89b430cedba4 | READY |
+| Retry/rollback | d02c3d90c7a2 | ROLLED_BACK |
 
-Each runtime folder also contains cli-transcript.jsonl. Each run includes audit.jsonl, approvals.jsonl, metrics.json, plans, proposed/applied diffs, and real test logs/results. Disposable test worktrees were removed by the test fixture after verification; evidence remains until the test temporary directory is reused. validation-results.json retains the measured summary.
+The CLI transcripts, run folders, Maven logs, and detailed per-run audit files were written under pytest's ignored temporary directory. They may exist on the machine that ran the suite, but they are not part of the GitHub repository, so no links to those temporary paths are provided here. The machine-readable results file retains the measured summary. Re-run the commands above to regenerate local test artifacts.
 
 ## Human-operated run results
 
@@ -63,11 +63,11 @@ The ambiguous run records HTTP/HTTPS support, a maximum explicit expiration of 3
 
 No human approval was inferred from the project's implementation authorization. Inspect these runs with ./orchestrator/run inspect RUN_ID. The requested plan/patch/schema/execution, rollback, and final-readiness decisions must be supplied explicitly. A paused run is not counted as a successful workflow.
 
-Concrete read-only patch previews are prepared for [greenfield](../runs/34a6434bf2c9/changes/1.patch) and [brownfield](../runs/7a3c0bb800e2/changes/1.patch), with scope and prospective hashes in each run's preview.json. These previews were generated without advancing the checkpoint, recording approval, or modifying either worktree. The normal workflow regenerates the proposal after plan approval; any later patch approval must match its actual hash.
+Concrete read-only patch previews were prepared for greenfield run `34a6434bf2c9` and brownfield run `7a3c0bb800e2`. The previews and their scope/hash manifests are kept in the local, ignored `orchestrator/runs/<RUN_ID>/changes/` folders and are not included in GitHub. They were generated without advancing checkpoints, recording approval, or modifying worktrees. The normal workflow regenerates a proposal after plan approval; any patch approval must match its actual hash.
 
 ## Unverified or deliberately limited
 
-- Ollama was unavailable during the initial FakeLLM demonstrations. It has since been installed and real local inference has executed; the real-provider workflow described below remains separate from the completed FakeLLM demonstrations. A complete Ollama workflow through code, Maven, and final readiness is still required for full real-provider acceptance.
+- Ollama was unavailable during the initial FakeLLM demonstrations. It was installed later and a separate real-provider workflow completed code generation, Maven/Testcontainers validation, and human-approved final readiness. See the final run summary below.
 - A real small-model workflow can fail structured output, context, or code-quality checks. Such failures stop visibly; FakeLLM does not replace the selected provider automatically.
 - All three human-operated demonstrations are READY with recorded operator decisions. They used FakeLLM; automated synthetic approvals and real Ollama inference are separate from these human-operated results.
 - Worktrees isolate source changes, not host execution privileges. Generated Java executes only after patch/execution approval; see [governance](governance.md).
@@ -84,9 +84,9 @@ Real brownfield run: d80be97dedbe. The run used Ollama directly and produced str
 
 After the foreground server stopped, the workflow entered SAFE_STOPPED on a connection error. The local service was restored with brew services run ollama, which does not register login startup. The same checkpoint was resumed. Planning then safely rejected a protected pom.xml proposal and a mismatched revision; validator feedback and a revision-constrained response schema enabled a permitted five-task proposal.
 
-The operator registered and approved the corrected T1-T7 plan after the [plan review](../runs/d80be97dedbe/plan-review.md). The run has since reached its patch gate. The generated Java draft has not been applied or verified with Maven; the patch review below identifies blockers. Historical agent counters in this run may undercount repeated calls made before the invocation-ID correction; the original audit records are preserved.
+The corrected T1-T7 plan and its review were recorded in local run artifacts. At that initial checkpoint, the Java draft had not been applied or verified with Maven; the draft review identified blockers that were addressed in the later patch revision described below. Historical agent counters may undercount repeated calls made before the invocation-ID correction; the original audit records are preserved locally.
 
-The run's manifest and inspect output are authoritative for its current checkpoint. No approval from a completed FakeLLM run is automatically granted to a new model-generated plan or patch. Artifacts are under orchestrator/runs/d80be97dedbe, including ollama-environment.json and audit.jsonl. No real-provider Java test success or final readiness is claimed until those stages execute.
+At the time of the planning checkpoint, the run manifest and inspect output reflected a pending plan decision. Approvals from completed FakeLLM runs were not reused for the Ollama-generated plan or patch. The final code, test, and readiness outcomes are summarized below; detailed run artifacts remain local and ignored by Git.
 
 ## Controlled plan revision verification
 
@@ -97,7 +97,8 @@ operator identity/reason, revision sequencing, dirty worktrees, later gates, loc
 explicit decisions, CLI/API behavior, atomic journal failure, and process interruption
 before/after checkpoint update and after the new gate. Restart recovery invoked no
 model or Maven and paused for a fresh approval. Synthetic approvals were used only
-inside isolated tests. Evidence: `.state/pytest-ollama-regression.xml` and `.log`.
+inside isolated tests. JUnit XML and log evidence were stored in the ignored local
+`.state` directory.
 
 Executed command:
 
@@ -115,34 +116,34 @@ this revision. `plans/1.json` is preserved, and `plans/2.json`, its revision pro
 audit/decision events, manifest, and LangGraph interrupt agree. The Java worktree
 remains clean, retry_count is 0, and no coding/testing agent has run in this scenario.
 
-## Real Ollama patch generation and blocked approval recommendation
+## Real Ollama patch review and final validation
 
 After explicit operator approval of revision 2, real Ollama calls generated all
 seven task proposals. The original plan remains superseded. Early model output
 attempted an out-of-task test change, which policy blocked; subsequent engineering
 feedback corrected migration/service/scheduler drafts before consolidation.
 
-The latest Python regression suite passed **98 tests**, with **4 Maven tests
+At the patch-revision stage, the Python regression suite passed **98 tests**, with **4 Maven tests
 deselected**, in **20.07 seconds**. It includes source-path/hash constraints,
 rejected-proposal evidence, an initial coding attempt plus at most three retries
 per task/revision, controlled rework of unapplied dependants, complete selected
 reference files, and preservation of pure environment-variable references during
-secret redaction. Evidence remains in `.state/pytest-ollama-regression.xml` and
-its matching log. Earlier counts above are historical runs, not additive totals.
+secret redaction. Its JUnit XML and log are local files under the ignored `.state`
+directory. Earlier counts above are historical runs, not additive totals.
 
-On 2026-11-13, run d80be97dedbe was inspected at pending patch approval
-`d80be97dedbe:patch:b629d8cd2b5efad5`. It proposes 12 files. The worktree is clean,
-all source hashes match, and there are zero changes_applied events or Testing Agent
-calls. No patch/schema/Maven approval has been granted.
+On 2026-11-13, run d80be97dedbe was initially inspected while patch approval
+`d80be97dedbe:patch:b629d8cd2b5efad5` was pending. At that checkpoint, the proposal
+contained 12 files, the worktree was clean, source hashes matched, and no changes
+had been applied or tested. The operator later superseded that proposal and approved
+a corrected patch, as described below.
 
-The [pre-approval engineering review](../runs/d80be97dedbe/patch-review.txt)
-recommends revising this draft. Static inspection found missing imports, nonexistent
-APIs in tests, the unchanged V1/V2 migration assertion, an unwanted scheduler
-transaction, and incomplete/invalid regressions. A read-only `git apply --check`
-failed with exit 128 because the diff renderer concatenated a missing-final-newline
-file with the next header. This is a real model-produced draft with known defects,
-not a passing Java implementation. The pending patch and its hash are retained;
-corrections require a fresh governed proposal before approval and execution.
+The local pre-approval review at
+`orchestrator/runs/d80be97dedbe/patch-review.txt` recommended revising this draft.
+Static inspection found missing imports, nonexistent APIs in tests, the unchanged
+V1/V2 migration assertion, an unwanted scheduler transaction, and incomplete or
+invalid regressions. A read-only `git apply --check` failed because the diff renderer
+concatenated a missing-final-newline file with the next header. The review and draft
+are local run artifacts and are not part of the published repository.
 
 The pending draft was revised through `revise-patch`. The original patch approval
 `d80be97dedbe:patch:b629d8cd2b5efad5` is superseded. Revision testing passed 11
@@ -150,10 +151,16 @@ checks covering renderer validity, exact pending-hash binding, invalid scopes an
 dirty sources, no-op rejection, prior decisions, and recovery around journal,
 checkpoint, and gate boundaries. A full Python suite passed 108 tests before the
 final no-op test was added; 4 Maven tests were deselected. The renderer plus
-revision-focused suite then passed 11 tests. Maven was not run.
+revision-focused suite then passed 11 tests. Maven had not yet run at this patch
+revision stage; the approved patch was validated afterward as described below.
 
-The new pending patch approval is `d80be97dedbe:patch:635cd6e2a0980a38` with
-proposal hash `635cd6e2a0980a38f949b205f69bd8891943353d38d1c2996ba64993ae30477d`.
-Its actual registered diff passed read-only `git apply --check`. It contains 12
-files. The main Java worktree remains clean; the patch has not been applied and
-Maven/Testcontainers have not run. See [current patch revision review](../runs/d80be97dedbe/revised-patch-review.txt).
+The patch was revised to address the review findings and renderer issue. The fresh
+proposal `d80be97dedbe:patch:635cd6e2a0980a38`, hash
+`635cd6e2a0980a38f949b205f69bd8891943353d38d1c2996ba64993ae30477d`, passed
+read-only `git apply --check` and received separate approval. The approved 12-file
+patch was applied in its isolated worktree. Maven `clean verify` then passed **62
+unit/HTTP tests and 23 PostgreSQL integration tests**, with zero failures, errors,
+or skips; Flyway applied V1–V3. The operator approved final readiness, and run
+`d80be97dedbe` reached READY. Its report, audit, logs, and review files remain in the
+local ignored `orchestrator/runs/d80be97dedbe/` directory and are not published on
+GitHub. The changes were not merged or deployed.
