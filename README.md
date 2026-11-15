@@ -95,7 +95,46 @@ Open the UI at <http://localhost:8080/>. Swagger UI is at <http://localhost:8080
 
 The Java service reads `DATABASE_URL`, `DB_USER`, `DB_PASSWORD`, and `BASE_URL`. Compose supplies local demonstration defaults; use environment-specific credentials outside local development. See [.env.example](.env.example) and [configuration and behavior](docs/design-decisions.md).
 
-The one-page UI is available at <http://localhost:8080/>. Paste a long URL, optionally set an expiration from 1–30 days, and select **Shorten URL**. The result offers copy and open-link actions plus a stats display. Headless Chromium verified `GET /` returned 200, created short code `BkcOhcj`, copied the link, opened it with a 302 redirect, and showed `totalClicks=1`. The frontend does not include custom aliases.
+For a concise overview of the application and orchestrator, see the [project description](docs/project-description.md).
+
+The one-page UI is available at <http://localhost:8080/>. The screenshot below shows its starting page.
+
+![URL Shortener frontend screenshot](docs/frontend-preview.png)
+
+#### Frontend fields and components
+
+- **Brand and introduction:** identifies the URL Shortener and explains its purpose.
+- **Your destination URL:** required field for a complete HTTP or HTTPS address. The browser checks the URL format before sending it to the API.
+- **Expiration options:** expandable optional field. Enter a whole number from 1 to 30 days; leave it blank if the link should not expire.
+- **Shorten URL:** submits the form. The button shows a loading state while the request is processed, and validation or API errors appear beside the form.
+- **Result card:** shows the generated short URL, active status, original address, short code, creation time, and expiration time.
+- **Copy link:** copies the short address and briefly changes its label to “Copied”.
+- **Open link:** opens the short address in a new tab. The backend responds with HTTP 302 to the saved destination and records the click.
+- **View stats:** fetches and displays total clicks, last accessed time, and daily clicks in UTC.
+
+The current frontend does not offer custom aliases. To run the page locally, start Docker Compose from the repository root with `docker compose up -d`, then visit <http://localhost:8080/>. The readiness check and other setup commands are listed above.
+
+#### Step-by-step shortening walkthrough
+
+The following browser screenshots use the [Muse.ai thread link provided for this walkthrough](https://muse.ai/thread/0e6603b3-7c48-4393-aa89-53275a01d4b9) as the destination. In this captured run, the optional expiration was set to one day and the generated short code was `ptvaXKh`.
+
+1. **Enter the destination and optional expiration.** Paste the complete Muse thread URL. Expand **Expiration options** to set a 1–30 day lifetime, or leave it empty for no expiration.
+
+   ![Step 1: Muse thread URL entered and optional expiration set to one day](docs/frontend-walkthrough/01-url-entry.png)
+
+2. **Create the short link.** Select **Shorten URL**. The page sends the URL and optional expiration to `POST /api/v1/urls`, then displays the result card with its short link and metadata.
+
+   ![Step 2: generated short URL and link details](docs/frontend-walkthrough/02-short-link-created.png)
+
+3. **Copy the result.** Select **Copy link**. The button confirms the action by showing “Copied”.
+
+   ![Step 3: copy confirmation](docs/frontend-walkthrough/03-link-copied.png)
+
+4. **Open the link and check activity.** Select **Open link** to follow the short address; the redirect returns HTTP 302 and records a click. Select **View stats** to see total clicks, the last access time, and daily activity. In this run the page showed `totalClicks=1`.
+
+   ![Step 4: link activity after opening the short URL once](docs/frontend-walkthrough/04-click-statistics.png)
+
+Headless Chromium completed this flow against the running application: `GET /` returned 200, creation succeeded, the Open link action received a 302 redirect, and stats reported one click. These screenshots document the browser interaction; the Muse thread itself is linked as the destination and its content is not reproduced here.
 
 ### Architecture overview (components, orchestration model, control flow, key decisions)
 
